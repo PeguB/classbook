@@ -11,7 +11,9 @@ public interface UserService {
 
     boolean deleteUser();
 
-    ResponseEntity<UserDto> createUser(UserDto userDto);
+    ResponseEntity createUser(UserDto userDto);
+
+    ResponseEntity loginUser(UserDto userDto);
 
     User updateUser();
 }

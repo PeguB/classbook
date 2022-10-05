@@ -9,17 +9,25 @@ import com.web.backend.service.UserMapper;
 import com.web.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
-@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final  Encoder encoder;
     private final UserMapper mapper;
+
+    public UserServiceImpl(UserRepository userRepository, Encoder encoder, UserMapper mapper) {
+        this.userRepository = userRepository;
+        this.encoder = encoder;
+        this.mapper = mapper;
+    }
 
     @Override
     public boolean deleteUser() {
@@ -27,20 +35,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<UserDto> createUser(UserDto userDto) {
+    public ResponseEntity createUser(UserDto userDto) {
 
         boolean checkUser = userRepository.findByUsername(userDto.getUsername()).isPresent();
         if(checkUser == false){
-            UserEntity createdUser = UserEntity.builder()
-                    .username(userDto.getUsername())
-                    .password(encoder.encrypt(userDto.getPassword()))
-                    .role(userDto.getRole())
-                    .build();
-            UserEntity savedEntity = userRepository.save(createdUser);
-            UserDto userDto1 = mapper.userEntityToUserDto(savedEntity);
+           UserEntity userEntity =  mapper.userDtoToUserEntity(userDto);
+           userEntity.setPassword(encoder.encrypt(userEntity.getPassword()));
+           userRepository.save(userEntity);
             return new ResponseEntity(HttpStatus.CREATED);
         }else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+    }
+
+    @Override
+    public ResponseEntity loginUser(UserDto userDto) {
+        Optional<UserEntity> user = userRepository.findByUsername(userDto.getUsername());
+        if(user.isPresent()){
+            return new ResponseEntity(mapper.userEntityToUserDto(user.get()),HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
