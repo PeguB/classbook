@@ -6,9 +6,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin
 public class AuthenticationController {
 
     private final UserService userService;
@@ -24,7 +24,7 @@ public class AuthenticationController {
         return userService.createUser(userDto);
     }
 
-    @GetMapping(path = "/login")
+    @PostMapping(path = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity login(@RequestBody UserDto userDto) {
         return userService.loginUser(userDto);
     }

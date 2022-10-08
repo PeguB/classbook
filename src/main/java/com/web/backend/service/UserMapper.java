@@ -1,6 +1,8 @@
 package com.web.backend.service;
 
+import com.web.backend.entity.CourseEntity;
 import com.web.backend.entity.UserEntity;
+import com.web.backend.response.CourseSummary;
 import com.web.backend.response.UserDto;
 import org.bson.types.ObjectId;
 import org.mapstruct.*;
@@ -24,4 +26,5 @@ public abstract class UserMapper {
     public abstract UserEntity userDtoToUserEntity(UserDto userDto);
 
     public abstract UserDto userEntityToUserDto(UserEntity userEntity);
+
 }

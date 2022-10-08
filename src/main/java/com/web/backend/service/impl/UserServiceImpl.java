@@ -51,7 +51,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity loginUser(UserDto userDto) {
         Optional<UserEntity> user = userRepository.findByUsername(userDto.getUsername());
-        if(user.isPresent()){
+        if(user.isPresent()
+        &&encoder.encrypt(userDto.getPassword()).equals(user.get().getPassword())){
             return new ResponseEntity(mapper.userEntityToUserDto(user.get()),HttpStatus.OK);
         }else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
